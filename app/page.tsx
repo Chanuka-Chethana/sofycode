@@ -16,26 +16,39 @@ export default function Home() {
     setFormState({ ...formState, [e.target.name]: e.target.value });
   };
 
+  const [errorMessage, setErrorMessage] = useState("");
+
   const submitContactForm = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formState.name || !formState.email || !formState.message) return;
 
+    if (formState.message.trim().length < 10) {
+      setErrorMessage("Message must be at least 10 characters long.");
+      setStatus("error");
+      return;
+    }
+
     setStatus("loading");
+    setErrorMessage("");
     try {
-      const response = await fetch("/api/contact", {
+      const response = await fetch("/api/inquiry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formState),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
         setStatus("success");
         setFormState({ name: "", email: "", message: "" });
       } else {
+        setErrorMessage(data.message || "Failed to send message. Please try again.");
         setStatus("error");
       }
     } catch (error) {
       console.error(error);
+      setErrorMessage("A network error occurred. Please check your connection.");
       setStatus("error");
     }
   };
@@ -370,7 +383,7 @@ export default function Home() {
                   {status === "error" && (
                     <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 rounded-xl flex items-center gap-3 text-red-700 dark:text-red-400">
                       <AlertCircle size={20} className="shrink-0" />
-                      <p className="text-sm font-medium">Failed to send message. Please try again or email us directly.</p>
+                      <p className="text-sm font-medium">{errorMessage || "Failed to send message. Please try again or email us directly."}</p>
                     </div>
                   )}
 
