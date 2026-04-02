@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --animate-infinite-scroll: scroll 40s linear infinite;
+  --animate-spin-slow: spin 15s linear infinite;
+  --animate-shine: shine 2s ease-in-out infinite;
+
+  --animate-softbounce: softbounce 4s ease-in-out infinite;
+  --animate-gradient-up: gradient-up 3s ease infinite;
+
+  @keyframes gradient-up {
+    0% { background-position: 0% 100%; }
+    50% { background-position: 0% 0%; }
+    100% { background-position: 0% 100%; }
+  }
+
+  @keyframes scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  @keyframes shine {
+    0% { left: -100%; }
+    100% { left: 200%; }
+  }
+
+  @keyframes softbounce {
+    0%, 100% { translate: 0 -40px; }
+    50% { translate: 0 0; }
+  }
+}
+
+html, body {
+  @apply antialiased text-slate-900 bg-slate-50 dark:text-gray-50 dark:bg-gray-950 transition-colors duration-300;
+}
+
+@layer utilities {
+  .mask-linear-gradient {
+    mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+  }
+}
+
+/* ── Mobile Performance Optimizations ──────────────────── */
+@media (max-width: 768px) {
+  /* Disable expensive GPU-composited animations on mobile */
+  .animate-pulse {
+    animation: none !important;
+  }
+  .animate-softbounce {
+    animation: none !important;
+  }
+  /* Smooth touch scrolling */
+  html, body {
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+  }
+  /* Reduce blur layers that create compositing overhead */
+  .backdrop-blur-md {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  .backdrop-blur-sm {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
